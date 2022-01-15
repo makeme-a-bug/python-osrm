@@ -15,6 +15,7 @@ __version__ = '0.11.1'
 class DefaultRequestConfig:
     def __init__(self):
         self.host = "http://localhost:5000"
+        self.host2 = "http://localhost:5000"
         self.profile = "driving"
         self.version = "v1"
         self.auth = None

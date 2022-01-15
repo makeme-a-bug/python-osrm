@@ -292,7 +292,11 @@ def table(coords_src, coords_dest=None,
     else:
         output = 3
 
-    host = check_host(url_config.host)
+    if annotations == "distance":
+        host = check_host(url_config.host)
+    else:
+        host = check_host(url_config.host2)
+    print(host)
     url = ''.join(
         [host, '/table/', url_config.version, '/', url_config.profile, '/'])
 
