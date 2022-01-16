@@ -296,7 +296,6 @@ def table(coords_src, coords_dest=None,
         host = check_host(url_config.host)
     else:
         host = check_host(url_config.host2)
-    print(host)
     url = ''.join(
         [host, '/table/', url_config.version, '/', url_config.profile, '/'])
 
