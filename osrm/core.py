@@ -12,10 +12,7 @@ except:
     from urllib2 import urlopen, Request
     from urllib2 import quote
 
-try:
-    from osgeo.ogr import Geometry
-except:
-    from ogr import Geometry
+import geomet
 
 import json
 
@@ -124,11 +121,14 @@ def decode_geom(encoded_polyline):
     line : ogr.Geometry
         The line geometry, as an ogr.Geometry instance.
     """
-    ma_ligne = Geometry(2)
-    lineAddPts = ma_ligne.AddPoint_2D
+    geojson = {
+        "type":"LineString",
+        "coordinates":[]
+    }
+    
     for coord in PolylineCodec().decode(encoded_polyline):
-        lineAddPts(coord[1], coord[0])
-    return ma_ligne
+        geojson['coordinates'].append([coord[1],coord[0]])
+    return geojson
 
 def simple_route(coord_origin, coord_dest, coord_intermediate=None,
                  alternatives=False, steps=False, output="full",
@@ -222,12 +222,12 @@ def simple_route(coord_origin, coord_dest, coord_intermediate=None,
             return parsed_json["routes"]
         else:
             if geometry.lower() == "wkb":
-                func = Geometry.ExportToWkb
+                func = geomet.wkb.dumps
             elif geometry.lower() == "wkt":
-                func = Geometry.ExportToWkt
+                func = geomet.wkt.dumps
 
             for route in parsed_json["routes"]:
-                route["geometry"] = func(decode_geom(route["geometry"]))
+                route["geometry"] = func(decode_geom(route["geometry"]),decimals = 10)
                 
         return parsed_json if output == "full" else parsed_json["routes"]
 
@@ -497,12 +497,12 @@ def trip(coords, steps=False, output="full",
         elif geometry in ("polyline", "geojson") and output == "trip":
             return parsed_json["trips"]
         else:
-            func = Geometry.ExportToWkb if geometry.lower() == "wkb" \
-                else Geometry.ExportToWkt
+            func = geomet.wkb.dumps if geometry.lower() == "wkb" \
+                else geomet.wkt.dumps
 
             for trip_route in parsed_json["trips"]:
                 trip_route["geometry"] = func(decode_geom(
-                                            trip_route["geometry"]))
+                                            trip_route["geometry"]) , decimals=10)
 
         return parsed_json if output == "full" else parsed_json["routes"]
 
