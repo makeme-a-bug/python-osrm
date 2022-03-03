@@ -13,9 +13,10 @@ import pandas as pd
 
 def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
+    chunk = []
     for i in range(0, len(lst), n):
-        yield lst[i:i + n]
-
+        chunk.append(lst[i:i + n])
+    return chunk
 
 #only supported for pandas dataframe
 def tableX(coords_src, coords_dest=None,
@@ -30,9 +31,8 @@ def tableX(coords_src, coords_dest=None,
     coords_dest_division = None
     ids_dest_division = None
 
-    if len(coords_src) > 100:
-        coords_src_division = chunks(coords_src, 50)
-        ids_origin_division = chunks(ids_origin, 50)
+    coords_src_division = chunks(coords_src, 50)
+    ids_origin_division = chunks(ids_origin, 50)
 
     
     if coords_dest is not None and coords_dest > 100:
@@ -49,11 +49,12 @@ def tableX(coords_src, coords_dest=None,
                         temp_list_coord = src + src2
                         temp_list_id = ids_origin_division[i]  + ids_origin_division[j]
                         time_matrix= table(temp_list_coord,ids_origin=temp_list_id,output='dataframe',annotations = annotations)
+                        # print(temp_list_coord , temp_list_id)
                         df_list.append(time_matrix[0])
                         break
                     except:
                         tt += 10
-                        print(tt,'went to Sleep for this time')
+                        print(f'went to Sleep for {tt} seconds')
                         time.sleep(tt)
                         pass
         
@@ -92,3 +93,5 @@ def tableX(coords_src, coords_dest=None,
                 cols = list(df_list[i].columns) 
                 main_def.loc[(main_def.index.isin(df_list[i].index), cols)] = df_list[i][cols]
         print('Data Merged',len(df_list),annotations)
+
+    return main_def
